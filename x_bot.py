@@ -146,7 +146,7 @@ class XBot:
                     text_element = tweet.locator('[data-testid="tweetText"]').first
                     tweet_text = text_element.inner_text() if text_element.count() > 0 else ""
                     
-                    username_element = tweet.locator('[data-testid="User-Name"]').first
+                    username_element = page.locator('[data-testid="User-Name"]').first
                     username_text = username_element.inner_text() if username_element.count() > 0 else ""
                     
                     username = username_text.split('\n')[0] if username_text else ""
