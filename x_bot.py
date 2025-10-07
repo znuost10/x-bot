@@ -81,15 +81,14 @@ class XBot:
         print("✓ Warm-up complete")
     
     def generate_reply(self, original_tweet, replier_text, username):
-        """Use Ollama to generate a contextual reply"""
+        """Use Ollama to generate a contextual reply and append affiliate link"""
         print(f"   🤖 Generating AI reply...")
         
         # Use prompt from config file
         prompt = REPLY_PROMPT_TEMPLATE.format(
             original_tweet=original_tweet[:200],
             replier_text=replier_text,
-            username=username,
-            affiliate_link=AFFILIATE_LINK
+            username=username
         )
         
         try:
@@ -105,20 +104,20 @@ class XBot:
             
             if response.status_code == 200:
                 reply = response.json()["response"].strip()
-                if len(reply) > 200:
-                    reply = reply.split('.')[0] + '.'
-                # Always ensure full link + disclaimer if missing
-                if AFFILIATE_LINK not in reply:
-                    reply += f" {AFFILIATE_LINK}"
-                if '18+ | Gamble responsibly' not in reply:
-                    reply += ' 18+ | Gamble responsibly.'
-                return reply
+                if len(reply) > 150:  # Ensure LLM reply is short
+                    reply = reply[:150].rsplit(' ', 1)[0] + '.'
+                # Append affiliate link and disclaimer
+                full_reply = f"{reply} {AFFILIATE_LINK} 18+ | Gamble responsibly"
+                if len(full_reply) > 280:  # X's character limit
+                    reply = reply[:150 - (len(AFFILIATE_LINK) + len(" 18+ | Gamble responsibly"))].rsplit(' ', 1)[0] + '.'
+                    full_reply = f"{reply} {AFFILIATE_LINK} 18+ | Gamble responsibly"
+                return full_reply
             else:
-                return f"That energy's fire, @{username}! Score free spins and rakeback: {AFFILIATE_LINK} 18+ | Gamble responsibly 🔥"
+                return f"🔥 Yo @{username}, that vibe's electric! Grab free spins & rakeback now! 🎰 {AFFILIATE_LINK} 18+ | Gamble responsibly"
                 
         except Exception as e:
             print(f"   ⚠️ Error calling Ollama: {e}")
-            return f"That energy's fire, @{username}! Score free spins and rakeback: {AFFILIATE_LINK} 18+ | Gamble responsibly 🔥"
+            return f"🔥 Yo @{username}, that vibe's electric! Grab free spins & rakeback now! 🎰 {AFFILIATE_LINK} 18+ | Gamble responsibly"
     
     def search_keyword(self, page, keyword):
         print(f"\n🔍 Searching for: {keyword}")
@@ -135,7 +134,7 @@ class XBot:
         tweet_elements = page.locator('article[data-testid="tweet"]').all()
         print(f"📊 Found {len(tweet_elements)} tweets on page")
         
-        for tweet in tweet_elements[:5]:  # Increased to top 5 for more threads
+        for tweet in tweet_elements[:5]:  # Top 5 tweets
             try:
                 link = tweet.locator('a[href*="/status/"]').first
                 href = link.get_attribute('href')
@@ -146,7 +145,7 @@ class XBot:
                     text_element = tweet.locator('[data-testid="tweetText"]').first
                     tweet_text = text_element.inner_text() if text_element.count() > 0 else ""
                     
-                    username_element = page.locator('[data-testid="User-Name"]').first
+                    username_element = tweet.locator('[data-testid="User-Name"]').first
                     username_text = username_element.inner_text() if username_element.count() > 0 else ""
                     
                     username = username_text.split('\n')[0] if username_text else ""
@@ -169,8 +168,7 @@ class XBot:
         page.goto(tweet_url)
         self.random_delay(2, 4)
         
-        # Increased scrolls to load more (~50-100 replies)
-        for _ in range(8):  
+        for _ in range(8):  # Load ~50-100 replies
             self.human_like_scroll(page)
             self.random_delay(1, 2)
         
@@ -194,7 +192,6 @@ class XBot:
                     
                     username = username_text.split('\n')[0] if username_text else ""
                     
-                    # Filter: Short, excited replies
                     if (reply_text and len(reply_text) <= MAX_REPLY_LENGTH and
                         any(keyword.lower() in reply_text.lower() for keyword in REPLY_FILTER_KEYWORDS)):
                         replies.append({
@@ -208,7 +205,7 @@ class XBot:
             except Exception as e:
                 continue
         
-        return replies[:3]  # Increased to 3 targets per thread
+        return replies[:3]  # Max 3 targets per thread
     
     def reply_to_tweet(self, page, reply_data, dry_run=False):
         print(f"\n{'='*60}")
@@ -366,7 +363,6 @@ class XBot:
                     if reply_count >= max_replies:
                         break
                     
-                    # Get replies to this tweet
                     replies = self.get_thread_replies(page, tweet['url'], tweet['text'])
                     print(f"\n📋 Found {len(replies)} target replies for tweet {tweet['id']}")
                     
