@@ -5,7 +5,7 @@
 
 # SEARCH SETTINGS
 TARGET_INFLUENCERS = ['BigfoltzVIP', 'HerroCrypto', 'Mrbankstips', 'BlazinHotBets', 'thegaboeth']  # Top gambling influencers
-KEYWORD = "(from:BigfoltzVIP OR from:HerroCrypto OR from:Mrbankstips OR from:BlazinHotBets OR from:thegaboeth) (win OR bonus OR slots OR jackpot) filter:videos min_replies:10"  # Target video posts with replies (fixed typo)
+KEYWORD = "(from:BigfoltzVIP OR from:HerroCrypto OR from:Mrbankstips OR from:BlazinHotBets OR from:thegaboeth) (win OR bonus OR slots OR jackpot) filter:videos min_replies:10"  # Fixed "bonu" to "bonus"
 MAX_REPLIES = 6  # Max 3 replies per thread, ~2 threads
 REPLY_FILTER_KEYWORDS = ['amazing', 'wow', 'nice', 'fire', 'lfg', 'insane', '🔥', '💰', 'gl', 'good luck', 'lets go', 'yo', 'bro', 'gm', '🤑', '👻', '🎃']  # Expanded for more hype/gambling replies
 MAX_REPLY_LENGTH = 75  # Slightly increased to catch tagged hype
@@ -18,7 +18,7 @@ DRY_RUN = True  # True = test mode (no posts), False = live
 WARM_UP = True  # True = browse to look human
 
 # REPLY GENERATION SETTINGS
-REPLY_PROMPT_TEMPLATE = """You are replying to an excited user in a casino tweet thread. Be fun, urgent, hype with emojis. Mention specific bonuses like free spins, rakeback, or daily rewards. Include the exact full link without changing or shortening it: {affiliate_link}. Always end exactly with '18+ | Gamble responsibly'. Keep under 200 chars.
+REPLY_PROMPT_TEMPLATE = """You are replying to an excited user in a casino tweet thread. Be fun, urgent, and hype with gambling emojis (🎰, 💸, 🤑). Mention specific bonuses like free spins, rakeback, or daily rewards. Keep it 100-150 chars. Do NOT include any links. Always end with a gambling emoji.
 
 Original tweet: {original_tweet}
 Replier @{username}: {replier_text}
