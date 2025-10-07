@@ -1,40 +1,52 @@
 # ============================================================
 # X BOT CONFIGURATION
+# Edit these settings to customize your bot behavior
 # ============================================================
 
 # SEARCH SETTINGS
-KEYWORD = "onlyfans"
-SEARCH_TYPE = "top"
-MAX_REPLIES_PER_CYCLE = 5  # Reply to top 5 posts per cycle
-
-# CONTINUOUS MODE
-RUN_CONTINUOUSLY = True  # True = runs in loop, False = runs once
-CYCLE_DELAY_MINUTES = 10  # Wait time between cycles
-
-# ENGAGEMENT SETTINGS
-CHECK_MENTIONS = True  # Check for replies to your posts
-REPLY_TO_MENTIONS = True  # Reply to people who replied to you
-MAX_MENTION_REPLIES_PER_CYCLE = 3  # Reply to max 3 mentions per cycle
-
-# IMAGE SETTINGS
-ATTACH_IMAGE = True
-IMAGE_PATH = "/root/x-bot/reply_image.jpg"
+KEYWORD = "artificial intelligence"  # What to search for on X
+MAX_REPLIES = 5  # How many tweets to reply to per run
 
 # MODE SETTINGS
-DRY_RUN = True  # Set to False for live posting
-WARM_UP = True
+DRY_RUN = True  # True = test mode (no actual posts), False = live posting
+WARM_UP = True  # True = browse normally first to look human
 
 # REPLY GENERATION SETTINGS
-SYSTEM_MESSAGE = """You are a (young sexy girl, barely legal, literacy of a high school dropout) horny and fowl mouth OnlyFans model. Reply with one short, sexy line to give men boners. Keep it suggestive, explicit, <80 chars. (USE THE DON'T REFER TO YOURSELF IN THE THIRD PERSON, DON'T INCLUDE PARENTHESIS)"""
+REPLY_PROMPT_TEMPLATE = """You are replying to a tweet. Write a brief, natural, friendly reply (1-2 sentences max, under 200 characters). Be conversational and relevant to what they said. Don't use hashtags. Sound human and authentic.
 
-INPUT_PROMPT_TEMPLATE = """You are a sexy female responding to males, use a one-liner reply to this post, emojis welcome, <80 chars (EXCLUDE PARENTHESIS):"""
+Tweet from @{username}: {tweet_text}
+
+Your reply:"""
+
+# Alternative prompt templates (uncomment to use):
+
+# PROFESSIONAL TONE
+# REPLY_PROMPT_TEMPLATE = """Write a professional, insightful reply to this tweet (1-2 sentences, under 200 characters). Be thoughtful and add value.
+#
+# Tweet from @{username}: {tweet_text}
+#
+# Your reply:"""
+
+# CASUAL/FUN TONE
+# REPLY_PROMPT_TEMPLATE = """Write a casual, friendly reply to this tweet (1-2 sentences, under 200 characters). Be enthusiastic and relatable. Use occasional emojis.
+#
+# Tweet from @{username}: {tweet_text}
+#
+# Your reply:"""
+
+# EXPERT/EDUCATIONAL TONE
+# REPLY_PROMPT_TEMPLATE = """Write an expert reply that adds valuable insight (2-3 sentences, under 250 characters). Share knowledge or ask a thoughtful question.
+#
+# Tweet from @{username}: {tweet_text}
+#
+# Your reply:"""
 
 # TIMING SETTINGS (in seconds)
-DELAY_BETWEEN_REPLIES_MIN = 30
-DELAY_BETWEEN_REPLIES_MAX = 60
-DRY_RUN_DELAY_MIN = 2
-DRY_RUN_DELAY_MAX = 5
+DELAY_BETWEEN_REPLIES_MIN = 30  # Minimum wait between replies (live mode)
+DELAY_BETWEEN_REPLIES_MAX = 60  # Maximum wait between replies (live mode)
+DRY_RUN_DELAY_MIN = 2  # Minimum wait in dry run mode
+DRY_RUN_DELAY_MAX = 5  # Maximum wait in dry run mode
 
 # OLLAMA SETTINGS
-OLLAMA_MODEL = "roxas/moethida"
-OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_MODEL = "llama3.2"  # Which LLM model to use
+OLLAMA_URL = "http://localhost:11434/api/generate"  # Ollama API endpoint
