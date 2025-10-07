@@ -11,7 +11,8 @@ from config import (
     REPLY_PROMPT_TEMPLATE, OLLAMA_MODEL, OLLAMA_URL,
     DELAY_BETWEEN_REPLIES_MIN, DELAY_BETWEEN_REPLIES_MAX,
     DRY_RUN_DELAY_MIN, DRY_RUN_DELAY_MAX,
-    REPLY_FILTER_KEYWORDS, MAX_REPLY_LENGTH, AFFILIATE_LINK
+    REPLY_FILTER_KEYWORDS, MAX_REPLY_LENGTH, AFFILIATE_LINK,
+    RUN_INTERVAL_SECONDS
 )
 
 class XBot:
@@ -134,7 +135,7 @@ class XBot:
         tweet_elements = page.locator('article[data-testid="tweet"]').all()
         print(f"📊 Found {len(tweet_elements)} tweets on page")
         
-        for tweet in tweet_elements[:5]:  # Top 5 tweets
+        for tweet in tweet_elements[:20]:  # Increased to top 20 tweets for more threads/replies
             try:
                 link = tweet.locator('a[href*="/status/"]').first
                 href = link.get_attribute('href')
@@ -168,7 +169,7 @@ class XBot:
         page.goto(tweet_url)
         self.random_delay(2, 4)
         
-        for _ in range(8):  # Load ~50-100 replies
+        for _ in range(15):  # Increased to 15 scrolls for ~100-200 replies
             self.human_like_scroll(page)
             self.random_delay(1, 2)
         
@@ -205,7 +206,7 @@ class XBot:
             except Exception as e:
                 continue
         
-        return replies[:3]  # Max 3 targets per thread
+        return replies[:10]  # Increased to max 10 targets per thread for more replies
     
     def reply_to_tweet(self, page, reply_data, dry_run=False):
         print(f"\n{'='*60}")
@@ -317,16 +318,16 @@ class XBot:
             page.screenshot(path=f"debug_error_{reply_data['id']}.png")
             return False
     
-    def run(self, keyword, max_replies=6, warm_up=True, dry_run=False):
+    def run_cycle(self, keyword, max_replies, warm_up, dry_run):
         if not os.path.exists('x_session.json'):
             print("❌ No x_session.json found!")
             return
         
         print("="*60)
         if dry_run:
-            print("🧪 Starting X Bot in DRY RUN Mode (No Actual Posts)")
+            print("🧪 Starting X Bot Cycle in DRY RUN Mode (No Actual Posts)")
         else:
-            print("🚀 Starting X Bot with Anti-Detection (LIVE MODE)")
+            print("🚀 Starting X Bot Cycle with Anti-Detection (LIVE MODE)")
         print("="*60)
         
         with sync_playwright() as p:
@@ -385,12 +386,12 @@ class XBot:
                 
                 print("\n" + "="*60)
                 if reply_count == 0:
-                    print("✓ No new replies to target!")
+                    print("✓ No new replies to target in this cycle!")
                 else:
                     if dry_run:
                         print(f"🧪 DRY RUN: Generated {reply_count} replies (not posted)")
                     else:
-                        print(f"✅ Successfully posted {reply_count} replies")
+                        print(f"✅ Successfully posted {reply_count} replies in this cycle")
                 print("="*60)
                 
                 print("\n📊 REPLY HISTORY:")
@@ -406,13 +407,19 @@ class XBot:
                         print(f"  Our reply: {details['our_reply'][:100]}...")
                 
             except Exception as e:
-                print(f"\n❌ Error: {e}")
+                print(f"\n❌ Error in cycle: {e}")
                 page.screenshot(path="error_screenshot.png")
             
             finally:
                 browser.close()
-                print("\n🏁 Bot finished running")
+                print("\n🏁 Cycle finished. Waiting for next cycle...")
+    
+    def run(self):
+        """Run the bot continuously in a loop"""
+        while True:
+            self.run_cycle(keyword=KEYWORD, max_replies=MAX_REPLIES, warm_up=WARM_UP, dry_run=DRY_RUN)
+            time.sleep(RUN_INTERVAL_SECONDS)  # Wait between cycles
 
 if __name__ == "__main__":
     bot = XBot()
-    bot.run(keyword=KEYWORD, max_replies=MAX_REPLIES, warm_up=WARM_UP, dry_run=DRY_RUN)
+    bot.run()
