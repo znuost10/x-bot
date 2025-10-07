@@ -107,16 +107,18 @@ class XBot:
                 reply = response.json()["response"].strip()
                 if len(reply) > 200:
                     reply = reply.split('.')[0] + '.'
-                # Randomly include affiliate link (70% chance)
-                if random.random() < 0.7 and AFFILIATE_LINK not in reply:
-                    reply = reply.rstrip('.') + f" {AFFILIATE_LINK} 18+ | Gamble responsibly."
+                # Always ensure full link + disclaimer if missing
+                if AFFILIATE_LINK not in reply:
+                    reply += f" {AFFILIATE_LINK}"
+                if '18+ | Gamble responsibly' not in reply:
+                    reply += ' 18+ | Gamble responsibly.'
                 return reply
             else:
-                return f"Love the energy, @{username}! Grab 50 free spins: {AFFILIATE_LINK} 18+ | Gamble responsibly."
+                return f"That energy's fire, @{username}! Score free spins and rakeback: {AFFILIATE_LINK} 18+ | Gamble responsibly 🔥"
                 
         except Exception as e:
             print(f"   ⚠️ Error calling Ollama: {e}")
-            return f"Love the energy, @{username}! Grab 50 free spins: {AFFILIATE_LINK} 18+ | Gamble responsibly."
+            return f"That energy's fire, @{username}! Score free spins and rakeback: {AFFILIATE_LINK} 18+ | Gamble responsibly 🔥"
     
     def search_keyword(self, page, keyword):
         print(f"\n🔍 Searching for: {keyword}")
@@ -133,7 +135,7 @@ class XBot:
         tweet_elements = page.locator('article[data-testid="tweet"]').all()
         print(f"📊 Found {len(tweet_elements)} tweets on page")
         
-        for tweet in tweet_elements[:3]:  # Limit to top 3 posts
+        for tweet in tweet_elements[:5]:  # Increased to top 5 for more threads
             try:
                 link = tweet.locator('a[href*="/status/"]').first
                 href = link.get_attribute('href')
@@ -167,8 +169,8 @@ class XBot:
         page.goto(tweet_url)
         self.random_delay(2, 4)
         
-        # Scroll to load more replies
-        for _ in range(3):  # Scroll 3 times to load ~20-50 replies
+        # Increased scrolls to load more (~50-100 replies)
+        for _ in range(8):  
             self.human_like_scroll(page)
             self.random_delay(1, 2)
         
@@ -206,7 +208,7 @@ class XBot:
             except Exception as e:
                 continue
         
-        return replies[:2]  # Limit to 2 replies per thread
+        return replies[:3]  # Increased to 3 targets per thread
     
     def reply_to_tweet(self, page, reply_data, dry_run=False):
         print(f"\n{'='*60}")
