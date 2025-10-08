@@ -3,8 +3,8 @@
 # ============================================================
 
 # AFFILIATE SETTINGS
-AFFILIATE_LINK = "https://bit.ly/your-casino-link"  # CHANGE THIS to your tracked link
-CASINO_NAME = "YourCasino"  # The casino you're promoting
+AFFILIATE_LINK = "https://gamba.com?c=beastaura"  # CHANGE THIS to your tracked link
+CASINO_NAME = "Gamba"  # The casino you're promoting
 
 # SEARCH STRATEGY POOL
 # Bot will pick from these using weighted random selection
